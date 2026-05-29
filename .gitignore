@@ -13,3 +13,10 @@ __pycache__/
 storage/
 
 *.zip
+
+# Local voice references and generated audio should not be pushed by default.
+omnivoice/*.wav
+omnivoice/*.WAV
+omnivoice/*.mp3
+omnivoice/*.flac
+omnivoice/outputs/

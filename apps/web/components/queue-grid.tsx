@@ -13,7 +13,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { ArrowUpDown, Calendar, ExternalLink, FileText, Languages } from "lucide-react";
+import { ArrowUpDown, Calendar, ExternalLink, FileText, Languages, Workflow } from "lucide-react";
 
 import type { Video } from "@/lib/types";
 import { outputUrl } from "@/lib/api";
@@ -172,10 +172,21 @@ export function QueueGrid({
         cell: ({ row }) => (
           <div className="flex w-full items-center gap-2">
             <EditableCell row={row.original} field="video_url" placeholder="https://..." onPatch={onPatch} />
-            <Link href={`/workspace/${row.original.id}`} className="shrink-0 text-[var(--muted)] hover:text-[var(--primary)]">
-              <ExternalLink size={15} />
-            </Link>
           </div>
+        ),
+      },
+      {
+        id: "flow",
+        header: "Project Flow",
+        size: 150,
+        cell: ({ row }) => (
+          <Link
+            href={`/workspace/${row.original.id}`}
+            className="flex items-center gap-2 rounded-md border border-[var(--outline)] bg-[var(--surface-low)] px-3 py-2 text-sm font-semibold text-[var(--muted)] hover:border-[var(--primary-strong)] hover:text-[var(--primary)]"
+          >
+            <Workflow size={15} />
+            Open Flow
+          </Link>
         ),
       },
       {
@@ -320,7 +331,7 @@ export function QueueGrid({
 
   return (
     <div ref={parentRef} className="h-full overflow-auto">
-      <div className="min-w-[2758px]">
+      <div className="min-w-[2908px]">
         <div className="sticky top-0 z-20 grid h-12 border-b border-[var(--outline)] bg-[var(--surface)]" style={{ gridTemplateColumns: columns.map((column) => `${column.size ?? 160}px`).join(" ") }}>
           {table.getHeaderGroups()[0].headers.map((header) => (
             <div key={header.id} className="flex items-center border-r border-[var(--outline)] px-4 text-xs font-bold uppercase tracking-[0.05em] text-[var(--muted)]">

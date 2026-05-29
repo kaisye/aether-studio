@@ -70,6 +70,8 @@ class MediaJob(Base):
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
     video_url: Mapped[str] = mapped_column(String(1024))
+    source_title: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    thumbnail_url: Mapped[str | None] = mapped_column(String(2048), nullable=True)
     content: Mapped[str] = mapped_column(Text, default="")
     source_language: Mapped[str] = mapped_column(String(16), default="EN")
     target_language: Mapped[str] = mapped_column(String(16), default="VI")

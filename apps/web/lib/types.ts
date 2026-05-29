@@ -25,6 +25,8 @@ export type Job = {
   id: string;
   video_id?: string;
   video_url: string;
+  source_title?: string | null;
+  thumbnail_url?: string | null;
   content: string;
   source_language: string;
   target_language: string;
@@ -45,7 +47,6 @@ export type Job = {
 };
 
 export type Video = Job & {
-  thumbnail_url?: string | null;
   workflow_template?: string;
   last_updated?: string;
   latest_job?: Job | null;
@@ -57,4 +58,22 @@ export type JobCreateInput = Pick<
 > & {
   publish_date?: string | null;
   publish_time?: string | null;
+};
+
+export type ReviewSubtitle = {
+  start: string;
+  end: string;
+  original_text: string;
+  translated_text: string;
+};
+
+export type VideoReview = {
+  job: Job;
+  review_status: "processing" | "ready" | "approved" | "failed" | string;
+  source_video_url?: string | null;
+  localized_video_url?: string | null;
+  original_subtitle_url?: string | null;
+  translated_subtitle_url?: string | null;
+  subtitle_rows: ReviewSubtitle[];
+  qa_checklist: string[];
 };

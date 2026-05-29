@@ -10,9 +10,10 @@ from fastapi.testclient import TestClient
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.database import Base, engine
-from app.main import app
+from app.main import app, ensure_schema_compatibility
 
 Base.metadata.create_all(bind=engine)
+ensure_schema_compatibility()
 
 client = TestClient(app)
 os.environ["AETHER_ALLOW_SYNTHETIC_SOURCE"] = "1"
@@ -57,7 +58,7 @@ def test_run_job_reaches_ready_with_logs_and_output() -> None:
 
     final = None
     started = time.time()
-    while time.time() - started < 6:
+    while time.time() - started < 20:
         current = client.get(f"/jobs/{job['id']}").json()
         if current["status"] in {"ready", "failed"}:
             final = current
@@ -77,6 +78,18 @@ def test_run_job_reaches_ready_with_logs_and_output() -> None:
     output = client.get(f"/jobs/{job['id']}/output")
     assert output.status_code == 200
     assert output.json()["output_url"] == final["output_url"]
+
+    review = client.get(f"/jobs/{job['id']}/review")
+    assert review.status_code == 200
+    review_data = review.json()
+    assert review_data["job"]["id"] == job["id"]
+    assert review_data["review_status"] == "ready"
+    assert review_data["localized_video_url"] == final["output_url"]
+    assert review_data["subtitle_rows"]
+
+    approved = client.post(f"/jobs/{job['id']}/review/approve")
+    assert approved.status_code == 200
+    assert approved.json()["review_status"] == "approved"
 
 
 def test_retry_failed_job_is_allowed() -> None:

@@ -1,0 +1,7 @@
+omnivoice
+fastapi
+uvicorn[standard]
+python-multipart
+soundfile
+requests
+pyngrok

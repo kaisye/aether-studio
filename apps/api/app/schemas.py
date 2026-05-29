@@ -99,6 +99,8 @@ class MediaJobCreate(BaseModel):
 
 class MediaJobPatch(BaseModel):
     video_url: str | None = None
+    source_title: str | None = None
+    thumbnail_url: str | None = None
     content: str | None = None
     source_language: str | None = None
     target_language: str | None = None
@@ -113,6 +115,8 @@ class MediaJobPatch(BaseModel):
 class MediaJobOut(BaseModel):
     id: str
     video_url: str
+    source_title: str | None = None
+    thumbnail_url: str | None = None
     content: str
     source_language: str
     target_language: str
@@ -143,3 +147,21 @@ class MediaJobOutputOut(BaseModel):
     status: MediaJobStatus
     output_url: str | None = None
     error_message: str | None = None
+
+
+class ReviewSubtitleOut(BaseModel):
+    start: str
+    end: str
+    original_text: str
+    translated_text: str
+
+
+class VideoReviewOut(BaseModel):
+    job: MediaJobOut
+    review_status: str
+    source_video_url: str | None = None
+    localized_video_url: str | None = None
+    original_subtitle_url: str | None = None
+    translated_subtitle_url: str | None = None
+    subtitle_rows: list[ReviewSubtitleOut]
+    qa_checklist: list[str]

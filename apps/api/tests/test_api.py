@@ -10,9 +10,10 @@ from fastapi.testclient import TestClient
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.database import Base, engine
-from app.main import app
+from app.main import app, ensure_schema_compatibility
 
 Base.metadata.create_all(bind=engine)
+ensure_schema_compatibility()
 
 
 client = TestClient(app)

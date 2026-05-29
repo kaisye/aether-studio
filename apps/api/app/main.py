@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 from contextlib import asynccontextmanager
+from dataclasses import asdict
 from datetime import datetime
 
 from fastapi import Depends, FastAPI, HTTPException
@@ -28,8 +29,11 @@ from .schemas import (
     ScheduleRequest,
     VideoOut,
     VideoPatch,
+    VideoReviewOut,
 )
 from .seed import seed_database
+from .services.metadata import extract_video_metadata
+from .services.review import build_review_artifacts, review_status
 from .services.storage import ensure_storage
 from .worker import queue_job, retry_job
 
@@ -57,6 +61,12 @@ def ensure_schema_compatibility() -> None:
     if "voice_rate" not in columns:
         with engine.begin() as connection:
             connection.execute(text("ALTER TABLE media_jobs ADD COLUMN voice_rate VARCHAR(16) NOT NULL DEFAULT '+0%'"))
+    if "source_title" not in columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE media_jobs ADD COLUMN source_title VARCHAR(500)"))
+    if "thumbnail_url" not in columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE media_jobs ADD COLUMN thumbnail_url VARCHAR(2048)"))
 
 
 app = FastAPI(title="Aether Studio API", version="0.1.0", lifespan=lifespan)
@@ -80,6 +90,7 @@ def health() -> dict[str, str]:
 @app.post("/jobs", response_model=MediaJobOut)
 def create_media_job(payload: MediaJobCreate, db: Session = Depends(get_db)) -> MediaJobOut:
     job = MediaJob(**payload.model_dump(), status=MediaJobStatus.draft, progress=0, current_step="Draft")
+    apply_video_metadata(job)
     db.add(job)
     db.flush()
     db.add(AuditLog(entity_type="media_job", entity_id=job.id, action="created", message="Job row created."))
@@ -91,6 +102,7 @@ def create_media_job(payload: MediaJobCreate, db: Session = Depends(get_db)) -> 
 @app.get("/jobs", response_model=list[MediaJobOut])
 def list_media_jobs(db: Session = Depends(get_db)) -> list[MediaJobOut]:
     jobs = db.query(MediaJob).order_by(MediaJob.updated_at.desc()).all()
+    hydrate_missing_metadata(db, jobs)
     return [MediaJobOut.model_validate(job) for job in jobs]
 
 
@@ -108,13 +120,37 @@ def patch_media_job(job_id: str, payload: MediaJobPatch, db: Session = Depends(g
     if not job:
         raise HTTPException(status_code=404, detail="Job not found.")
 
-    for key, value in payload.model_dump(exclude_unset=True).items():
+    patch_data = payload.model_dump(exclude_unset=True)
+    for key, value in patch_data.items():
         setattr(job, key, value)
+    if "video_url" in patch_data:
+        apply_video_metadata(job)
     job.updated_at = datetime.utcnow()
     db.add(AuditLog(entity_type="media_job", entity_id=job.id, action="updated", message="Job row updated."))
     db.commit()
     db.refresh(job)
     return MediaJobOut.model_validate(job)
+
+
+def apply_video_metadata(job: MediaJob) -> None:
+    metadata = extract_video_metadata(job.video_url)
+    if metadata.title:
+        job.source_title = metadata.title
+    if metadata.thumbnail_url:
+        job.thumbnail_url = metadata.thumbnail_url
+
+
+def hydrate_missing_metadata(db: Session, jobs: list[MediaJob]) -> None:
+    changed = False
+    for job in jobs[:12]:
+        if job.source_title and job.thumbnail_url:
+            continue
+        before = (job.source_title, job.thumbnail_url)
+        apply_video_metadata(job)
+        if before != (job.source_title, job.thumbnail_url):
+            changed = True
+    if changed:
+        db.commit()
 
 
 @app.post("/jobs/{job_id}/run", response_model=MediaJobOut)
@@ -165,6 +201,59 @@ def get_media_job_output(job_id: str, db: Session = Depends(get_db)) -> MediaJob
         output_url=job.output_url,
         error_message=job.error_message,
     )
+
+
+@app.get("/jobs/{job_id}/review", response_model=VideoReviewOut)
+def get_video_review(job_id: str, db: Session = Depends(get_db)) -> VideoReviewOut:
+    job = db.get(MediaJob, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found.")
+    artifacts = build_review_artifacts(job)
+    return VideoReviewOut(
+        job=MediaJobOut.model_validate(job),
+        review_status=review_status(job),
+        source_video_url=artifacts.source_video_url,
+        localized_video_url=artifacts.localized_video_url,
+        original_subtitle_url=artifacts.original_subtitle_url,
+        translated_subtitle_url=artifacts.translated_subtitle_url,
+        subtitle_rows=[asdict(row) for row in artifacts.subtitle_rows],
+        qa_checklist=_review_checklist(job, artifacts.subtitle_rows),
+    )
+
+
+@app.post("/jobs/{job_id}/review/approve", response_model=VideoReviewOut)
+def approve_video_review(job_id: str, db: Session = Depends(get_db)) -> VideoReviewOut:
+    job = db.get(MediaJob, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found.")
+    if job.status != MediaJobStatus.ready or not job.output_url:
+        raise HTTPException(status_code=409, detail="Only ready jobs with output video can be approved.")
+    job.current_step = "Review approved"
+    job.logs = f"{job.logs}\n[{datetime.utcnow().isoformat(timespec='seconds')}Z] Review approved.".strip()
+    job.updated_at = datetime.utcnow()
+    db.add(AuditLog(entity_type="media_job", entity_id=job.id, action="review_approved", message="Video review approved."))
+    db.commit()
+    db.refresh(job)
+    return get_video_review(job_id, db)
+
+
+@app.post("/jobs/{job_id}/review/regenerate", response_model=MediaJobOut)
+def regenerate_video_review(job_id: str, db: Session = Depends(get_db)) -> MediaJobOut:
+    job = db.get(MediaJob, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found.")
+    job.logs = f"{job.logs}\n[{datetime.utcnow().isoformat(timespec='seconds')}Z] Review regeneration requested.".strip()
+    job = retry_job(db, job)
+    return MediaJobOut.model_validate(job)
+
+
+def _review_checklist(job: MediaJob, subtitle_rows: list[object]) -> list[str]:
+    checklist: list[str] = []
+    checklist.append("Source video available" if job.video_url else "Source video missing")
+    checklist.append("Localized output ready" if job.output_url else "Localized output not ready")
+    checklist.append("Subtitle rows available" if subtitle_rows else "Subtitle rows missing")
+    checklist.append("No processing error" if not job.error_message else f"Error: {job.error_message}")
+    return checklist
 
 
 @app.get("/api/videos", response_model=list[VideoOut])

@@ -1,4 +1,4 @@
-import type { Job, JobCreateInput, Video } from "./types";
+import type { Job, JobCreateInput, Video, VideoReview } from "./types";
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8001";
 
@@ -93,6 +93,23 @@ export async function deleteJob(videoId: string) {
   return request<{ status: string }>(`/jobs/${videoId}`, {
     method: "DELETE",
   });
+}
+
+export async function getVideoReview(videoId: string) {
+  return request<VideoReview>(`/jobs/${videoId}/review`, { cache: "no-store" });
+}
+
+export async function approveVideoReview(videoId: string) {
+  return request<VideoReview>(`/jobs/${videoId}/review/approve`, {
+    method: "POST",
+  });
+}
+
+export async function regenerateVideoReview(videoId: string) {
+  const job = await request<Job>(`/jobs/${videoId}/review/regenerate`, {
+    method: "POST",
+  });
+  return normalizeJob(job);
 }
 
 export async function scheduleVideos(videoIds: string[]) {
