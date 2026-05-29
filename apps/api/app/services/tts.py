@@ -180,9 +180,8 @@ def _save_omnivoice_tts(text: str, voice: str, output: Path) -> None:
         payload["instruct"] = os.getenv("OMNIVOICE_INSTRUCT", "").strip() or voice
     elif mode == "clone":
         ref_audio_url = os.getenv("OMNIVOICE_REF_AUDIO_URL", "").strip()
-        if not ref_audio_url:
-            raise RuntimeError("OMNIVOICE_REF_AUDIO_URL is required when OMNIVOICE_MODE=clone.")
-        payload["ref_audio_url"] = ref_audio_url
+        if ref_audio_url:
+            payload["ref_audio_url"] = ref_audio_url
         ref_text = os.getenv("OMNIVOICE_REF_TEXT", "").strip()
         if ref_text:
             payload["ref_text"] = ref_text
