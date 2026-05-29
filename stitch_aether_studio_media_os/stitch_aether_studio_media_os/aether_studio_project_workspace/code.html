@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111415;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #323536;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #464555;
+        }
+        .pipeline-connector::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -24px;
+            width: 1px;
+            height: 24px;
+            background: #464555;
+            z-index: 0;
+        }
+        .pipeline-card:last-child .pipeline-connector::after {
+            display: none;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(195, 192, 255, 0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface-container-lowest": "#0c0f10",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "primary-container": "#4f46e5",
+                        "outline": "#918fa1",
+                        "error-container": "#93000a",
+                        "on-surface": "#e1e3e4",
+                        "on-secondary-container": "#aeb5c9",
+                        "on-secondary-fixed-variant": "#404758",
+                        "on-secondary": "#293040",
+                        "surface": "#111415",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-fixed": "#0f0069",
+                        "inverse-surface": "#e1e3e4",
+                        "surface-tint": "#c3c0ff",
+                        "on-surface-variant": "#c7c4d8",
+                        "secondary": "#c0c6db",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed": "#351000",
+                        "surface-container": "#1d2021",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-bright": "#373a3b",
+                        "surface-container-low": "#191c1d",
+                        "inverse-primary": "#4d44e3",
+                        "tertiary-container": "#a44100",
+                        "secondary-fixed-dim": "#c0c6db",
+                        "outline-variant": "#464555",
+                        "primary": "#c3c0ff",
+                        "surface-variant": "#323536",
+                        "on-primary-container": "#dad7ff",
+                        "surface-container-highest": "#323536",
+                        "on-background": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "secondary-container": "#404758",
+                        "surface-dim": "#111415",
+                        "primary-fixed": "#e2dfff",
+                        "surface-container-high": "#282a2b",
+                        "background": "#111415",
+                        "inverse-on-surface": "#2e3132",
+                        "tertiary": "#ffb695",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#dce2f7",
+                        "on-tertiary": "#571f00",
+                        "on-primary": "#1d00a5",
+                        "on-tertiary-container": "#ffd2be",
+                        "on-secondary-fixed": "#141b2b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "3xl": "64px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "2xl": "48px",
+                        "margin-mobile": "16px",
+                        "xl": "32px",
+                        "base": "4px",
+                        "gutter": "20px",
+                        "xs": "4px",
+                        "margin-desktop": "40px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "label-sm": ["Geist"],
+                        "body-md": ["Inter"],
+                        "code": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "label-md": ["Geist"],
+                        "headline-md": ["Geist"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "code": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary/30">
+<!-- SideNavBar Anchor -->
+<aside class="w-[280px] h-full fixed left-0 top-0 border-r border-outline-variant bg-surface flex flex-col p-lg gap-md z-50">
+<div class="flex items-center gap-sm mb-xl">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface leading-tight">Aether Studio</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">AI Media Engine</p>
+</div>
+</div>
+<button class="w-full py-md px-lg bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md flex items-center justify-center gap-sm hover:opacity-90 active:scale-[0.98] transition-all mb-md">
+<span class="material-symbols-outlined">add</span>
+            New Project
+        </button>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg bg-secondary-container text-on-secondary-container transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">folder_copy</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">video_library</span>
+<span class="font-label-md text-label-md">Assets</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">record_voice_over</span>
+<span class="font-label-md text-label-md">Voices</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-lg border-t border-outline-variant space-y-1">
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Docs</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar Anchor -->
+<header class="h-16 fixed top-0 right-0 left-[280px] z-40 border-b border-outline-variant bg-surface flex justify-between items-center px-lg">
+<div class="flex items-center gap-xl">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="bg-surface-container-low border border-outline-variant rounded-md pl-10 pr-4 py-1.5 text-sm w-64 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary" placeholder="Search workspace..." type="text"/>
+</div>
+<nav class="flex gap-lg">
+<a class="text-primary border-b-2 border-primary pb-2 font-label-md text-label-md" href="#">Timeline</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md" href="#">Review</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md" href="#">Collaborate</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md" href="#">Export</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-md py-1.5 bg-primary text-on-primary rounded-md font-label-md text-label-md hover:opacity-90 transition-opacity">
+                Publish
+            </button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-1.5 text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace Layout -->
+<main class="ml-[280px] mt-16 mr-[320px] p-xl min-h-[calc(100vh-64px)]">
+<!-- Header Content -->
+<div class="flex justify-between items-end mb-3xl">
+<div>
+<nav class="flex items-center gap-xs text-on-surface-variant text-label-sm mb-xs">
+<span>Projects</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span>Active Workflows</span>
+</nav>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Global Product Launch 2024</h2>
+<div class="flex items-center gap-md mt-sm">
+<span class="flex items-center gap-xs text-label-sm text-primary">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                        Active Pipeline
+                    </span>
+<span class="text-on-surface-variant text-label-sm">•</span>
+<span class="text-on-surface-variant text-label-sm">Modified 2m ago</span>
+</div>
+</div>
+<button class="px-xl py-md bg-primary-container text-on-primary-container rounded-lg font-headline-sm text-label-md flex items-center gap-sm hover:brightness-110 transition-all shadow-lg shadow-primary-container/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+                Run Pipeline
+            </button>
+</div>
+<!-- Linear Production Pipeline -->
+<div class="max-w-4xl mx-auto space-y-md relative">
+<!-- 1. Source Video -->
+<div class="pipeline-card relative">
+<div class="pipeline-connector"></div>
+<div class="bg-surface-container border border-outline-variant p-md rounded-xl flex items-center justify-between hover:border-primary/50 transition-colors">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">video_library</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Source Video</p>
+<p class="text-label-sm text-on-surface-variant">4K_Keynote_Main.mp4 (2.4GB)</p>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<div class="text-right">
+<span class="px-sm py-xs bg-green-500/10 text-green-400 rounded text-label-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                Success
+                            </span>
+<p class="text-[10px] text-on-surface-variant mt-xs">Runtime: 12s</p>
+</div>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 2. Subtitle Extraction -->
+<div class="pipeline-card relative">
+<div class="pipeline-connector"></div>
+<div class="bg-surface-container border border-outline-variant p-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">subtitles</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Subtitle Extraction</p>
+<p class="text-label-sm text-on-surface-variant">Whisper v3-Large • 98% Confidence</p>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<div class="text-right">
+<span class="px-sm py-xs bg-green-500/10 text-green-400 rounded text-label-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                Success
+                            </span>
+<p class="text-[10px] text-on-surface-variant mt-xs">Runtime: 45s</p>
+</div>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 3. Translation -->
+<div class="pipeline-card relative">
+<div class="pipeline-connector"></div>
+<div class="bg-surface-container border border-outline-variant p-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">translate</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Translation</p>
+<p class="text-label-sm text-on-surface-variant">Target: Spanish, French, Japanese</p>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<div class="text-right">
+<span class="px-sm py-xs bg-green-500/10 text-green-400 rounded text-label-sm flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                Success
+                            </span>
+<p class="text-[10px] text-on-surface-variant mt-xs">Runtime: 8s</p>
+</div>
+<button class="p-2 hover:bg-surface-container-highest rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 4. Script Adaptation (Active) -->
+<div class="pipeline-card relative">
+<div class="pipeline-connector"></div>
+<div class="bg-surface-container-high border-2 border-primary p-md rounded-xl flex items-center justify-between shadow-[0_0_20px_rgba(79,70,229,0.1)]">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary relative overflow-hidden">
+<div class="absolute inset-0 shimmer"></div>
+<span class="material-symbols-outlined z-10">auto_fix_high</span>
+</div>
+<div class="flex-1 min-w-[200px]">
+<p class="font-label-md text-label-md text-on-surface">Script Adaptation</p>
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full mt-sm">
+<div class="bg-primary h-full rounded-full transition-all duration-500" style="width: 65%"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<div class="text-right">
+<span class="text-primary font-code text-sm">65%</span>
+<p class="text-[10px] text-primary/70 mt-xs italic">Processing...</p>
+</div>
+<button class="p-2 bg-primary text-on-primary rounded-lg transition-colors shadow-md">
+<span class="material-symbols-outlined">pause</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 5. Voice Generation (Pending State Group) -->
+<div class="pipeline-card relative opacity-60">
+<div class="pipeline-connector"></div>
+<div class="bg-surface-container border border-outline-variant border-dashed p-md rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-lg">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined">record_voice_over</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Voice Generation</p>
+<p class="text-label-sm text-on-surface-variant">Neural Engine V2 • Multi-speaker</p>
+</div>
+</div>
+<div class="flex items-center gap-xl">
+<span class="text-label-sm text-on-surface-variant uppercase tracking-widest">Pending</span>
+<button class="p-2 text-on-surface-variant/30 cursor-not-allowed">
+<span class="material-symbols-outlined">lock</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Sequence Continues (Simplified) -->
+<div class="grid grid-cols-2 gap-md opacity-40">
+<div class="bg-surface-container-low border border-outline-variant p-sm rounded-lg flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">sync</span>
+<span class="text-label-sm">Audio Alignment</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-sm rounded-lg flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">branding_watermark</span>
+<span class="text-label-sm">Branding</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-sm rounded-lg flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">memory</span>
+<span class="text-label-sm">Rendering</span>
+</div>
+<div class="bg-surface-container-low border border-outline-variant p-sm rounded-lg flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">fact_check</span>
+<span class="text-label-sm">Final QA</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Context Panel (Inspector) -->
+<aside class="w-[320px] h-full fixed right-0 top-0 border-l border-outline-variant bg-surface flex flex-col z-50 overflow-y-auto">
+<div class="p-lg border-b border-outline-variant h-16 flex items-center">
+<h3 class="font-label-md text-label-md text-on-surface uppercase tracking-widest">Inspector</h3>
+</div>
+<div class="p-lg space-y-xl">
+<!-- Render Settings -->
+<div>
+<div class="flex items-center gap-sm mb-md text-primary">
+<span class="material-symbols-outlined text-sm">settings_input_component</span>
+<span class="font-label-md text-label-md font-bold">Render Settings</span>
+</div>
+<div class="space-y-md">
+<div class="space-y-xs">
+<label class="text-label-sm text-on-surface-variant">Output Resolution</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-md px-md py-sm text-sm focus:border-primary">
+<option>4K Ultra HD (3840x2160)</option>
+<option>1080p Full HD</option>
+<option>Vertical (9:16) for TikTok</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="space-y-xs">
+<label class="text-label-sm text-on-surface-variant">Format</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-md px-md py-sm text-sm">
+<option>MP4 / H.264</option>
+<option>MOV / ProRes</option>
+</select>
+</div>
+<div class="space-y-xs">
+<label class="text-label-sm text-on-surface-variant">Bitrate</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-md px-md py-sm text-sm">
+<option>Variable</option>
+<option>Constant</option>
+</select>
+</div>
+</div>
+<div class="flex items-center justify-between p-sm bg-surface-container-high rounded-lg border border-outline-variant">
+<span class="text-label-sm">Hardware Acceleration</span>
+<div class="w-8 h-4 bg-primary rounded-full relative">
+<div class="w-3 h-3 bg-on-primary rounded-full absolute right-0.5 top-0.5"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- QA Checklist -->
+<div>
+<div class="flex items-center gap-sm mb-md text-primary">
+<span class="material-symbols-outlined text-sm">task_alt</span>
+<span class="font-label-md text-label-md font-bold">QA Checklist</span>
+</div>
+<div class="space-y-sm">
+<label class="flex items-center gap-md p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer group">
+<div class="w-5 h-5 border-2 border-primary rounded flex items-center justify-center bg-primary">
+<span class="material-symbols-outlined text-on-primary text-sm">check</span>
+</div>
+<span class="text-body-sm text-on-surface">Legal Compliance Review</span>
+</label>
+<label class="flex items-center gap-md p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer group">
+<div class="w-5 h-5 border-2 border-primary rounded flex items-center justify-center bg-primary">
+<span class="material-symbols-outlined text-on-primary text-sm">check</span>
+</div>
+<span class="text-body-sm text-on-surface">Brand Asset Verification</span>
+</label>
+<label class="flex items-center gap-md p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer group">
+<div class="w-5 h-5 border-2 border-outline-variant rounded flex items-center justify-center"></div>
+<span class="text-body-sm text-on-surface-variant">Audio Sync Validation</span>
+</label>
+<label class="flex items-center gap-md p-sm hover:bg-surface-container-low rounded-lg transition-colors cursor-pointer group">
+<div class="w-5 h-5 border-2 border-outline-variant rounded flex items-center justify-center"></div>
+<span class="text-body-sm text-on-surface-variant">Localized Text Overflow</span>
+</label>
+</div>
+</div>
+<!-- Performance Stats -->
+<div class="bg-surface-container-high rounded-xl p-lg border border-outline-variant">
+<p class="text-label-sm text-on-surface-variant mb-md uppercase tracking-tighter">Cluster Metrics</p>
+<div class="space-y-md">
+<div class="flex justify-between items-center">
+<span class="text-label-sm">VRAM Usage</span>
+<span class="text-label-sm font-code">12.4 / 24 GB</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="bg-primary w-1/2 h-full"></div>
+</div>
+<div class="flex justify-between items-center mt-md">
+<span class="text-label-sm">Active Workers</span>
+<span class="text-label-sm font-code">8 Nodes</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-auto p-lg border-t border-outline-variant bg-surface-container-low">
+<button class="w-full py-md border border-outline-variant rounded-lg text-on-surface font-label-md hover:bg-surface-container-high transition-colors">
+                Export Project Data
+            </button>
+</div>
+</aside>
+<script>
+        // Micro-interaction for pipeline simulation
+        let progress = 65;
+        const progressBar = document.querySelector('.bg-primary.h-full');
+        const progressText = document.querySelector('.text-primary.font-code');
+        
+        setInterval(() => {
+            if (progress < 99) {
+                progress += Math.random() * 0.5;
+                progressBar.style.width = `${progress}%`;
+                progressText.innerText = `${Math.floor(progress)}%`;
+            } else {
+                progress = 100;
+                progressBar.style.width = '100%';
+                progressText.innerText = '100%';
+            }
+        }, 1000);
+
+        // Simple button active effect
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('mousedown', () => btn.classList.add('scale-[0.98]'));
+            btn.addEventListener('mouseup', () => btn.classList.remove('scale-[0.98]'));
+            btn.addEventListener('mouseleave', () => btn.classList.remove('scale-[0.98]'));
+        });
+    </script>
+</body></html>

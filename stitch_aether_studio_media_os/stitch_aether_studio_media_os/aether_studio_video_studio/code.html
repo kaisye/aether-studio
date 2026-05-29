@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Aether Studio | Video Preview &amp; Localization</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Geist:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#3323cc",
+                    "surface-container-lowest": "#0c0f10",
+                    "primary-fixed-dim": "#c3c0ff",
+                    "primary-container": "#4f46e5",
+                    "outline": "#918fa1",
+                    "error-container": "#93000a",
+                    "on-surface": "#e1e3e4",
+                    "on-secondary-container": "#aeb5c9",
+                    "on-secondary-fixed-variant": "#404758",
+                    "on-secondary": "#293040",
+                    "surface": "#111415",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-fixed": "#0f0069",
+                    "inverse-surface": "#e1e3e4",
+                    "surface-tint": "#c3c0ff",
+                    "on-surface-variant": "#c7c4d8",
+                    "secondary": "#c0c6db",
+                    "tertiary-fixed-dim": "#ffb695",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed": "#351000",
+                    "surface-container": "#1d2021",
+                    "tertiary-fixed": "#ffdbcc",
+                    "surface-bright": "#373a3b",
+                    "surface-container-low": "#191c1d",
+                    "inverse-primary": "#4d44e3",
+                    "tertiary-container": "#a44100",
+                    "secondary-fixed-dim": "#c0c6db",
+                    "outline-variant": "#464555",
+                    "primary": "#c3c0ff",
+                    "surface-variant": "#323536",
+                    "on-primary-container": "#dad7ff",
+                    "surface-container-highest": "#323536",
+                    "on-background": "#e1e3e4",
+                    "on-tertiary-fixed-variant": "#7b2f00",
+                    "secondary-container": "#404758",
+                    "surface-dim": "#111415",
+                    "primary-fixed": "#e2dfff",
+                    "surface-container-high": "#282a2b",
+                    "background": "#111415",
+                    "inverse-on-surface": "#2e3132",
+                    "tertiary": "#ffb695",
+                    "error": "#ffb4ab",
+                    "secondary-fixed": "#dce2f7",
+                    "on-tertiary": "#571f00",
+                    "on-primary": "#1d00a5",
+                    "on-tertiary-container": "#ffd2be",
+                    "on-secondary-fixed": "#141b2b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "3xl": "64px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "2xl": "48px",
+                    "margin-mobile": "16px",
+                    "xl": "32px",
+                    "base": "4px",
+                    "gutter": "20px",
+                    "xs": "4px",
+                    "margin-desktop": "40px",
+                    "lg": "24px"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter"],
+                    "label-sm": ["Geist"],
+                    "body-md": ["Inter"],
+                    "code": ["Geist"],
+                    "headline-lg": ["Geist"],
+                    "body-lg": ["Inter"],
+                    "headline-sm": ["Geist"],
+                    "display-lg": ["Geist"],
+                    "label-md": ["Geist"],
+                    "headline-md": ["Geist"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "code": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #111415; color: #e1e3e4; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #111415; }
+        ::-webkit-scrollbar-thumb { background: #323536; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #464555; }
+        .video-split-mask { position: relative; overflow: hidden; }
+        .video-split-divider { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #4f46e5; z-index: 10; cursor: col-resize; }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-hidden h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="w-[280px] h-full fixed left-0 top-0 border-r border-outline-variant bg-surface flex flex-col p-lg gap-md z-50">
+<div class="flex items-center gap-sm mb-xl">
+<div class="w-8 h-8 rounded-lg bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">cloud_done</span>
+</div>
+<div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface leading-none">Aether Studio</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">AI Media Engine</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-xs">
+<!-- Dashboard -->
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Projects (Active) -->
+<a class="flex items-center gap-md p-md bg-secondary-container text-on-secondary-container rounded-lg transition-all scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_copy</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<!-- Assets -->
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">video_library</span>
+<span class="font-label-md text-label-md">Assets</span>
+</a>
+<!-- Voices -->
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">record_voice_over</span>
+<span class="font-label-md text-label-md">Voices</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto flex flex-col gap-xs pt-lg border-t border-outline-variant">
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-md text-label-md">Docs</span>
+</a>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 ml-[280px] flex flex-col h-full bg-surface-container-lowest relative overflow-hidden">
+<!-- TopNavBar (Shared Component) -->
+<header class="h-16 border-b border-outline-variant bg-surface flex justify-between items-center px-lg sticky top-0 z-40">
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-sm bg-surface-container-high px-md py-xs rounded-lg border border-outline-variant">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">search</span>
+<input class="bg-transparent border-none outline-none focus:ring-0 text-label-md font-label-md w-48 text-on-surface" placeholder="Search projects..." type="text"/>
+</div>
+<div class="flex items-center gap-md">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Timeline</a>
+<a class="text-primary border-b-2 border-primary pb-2 font-label-md text-label-md" href="#">Review</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Collaborate</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Export</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-md py-sm bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">publish</span>
+                    Publish
+                </button>
+<div class="flex items-center gap-sm">
+<button class="p-xs text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-xs text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</div>
+</header>
+<!-- Main Content Grid -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Central Viewport -->
+<section class="flex-1 flex flex-col min-w-0 border-r border-outline-variant">
+<!-- Split Screen Video Player -->
+<div class="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+<div class="w-full h-full flex relative">
+<!-- Left: Original -->
+<div class="w-1/2 h-full bg-surface-container overflow-hidden relative group">
+<img class="w-full h-full object-cover" data-alt="A professional cinematic scene showing a person talking in a modern, brightly lit office environment. The camera is positioned for a mid-shot, capturing natural expressions and mouth movements. The color palette is clean with high contrast, and the overall aesthetic is high-end corporate media production, perfectly sharp and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDv8INEmKm9WNQ8PMQNUD001eKkM4LHOw5mhxPImphaPJBpaLlcDJItobGnI1lXDjmGz7f15p7L-PsVdhypeR0HMiCBBxbA9Z1OxElFDC5kRP35Qm8gdiObbberrqk0gN5tSx_czoNgNjFOxTyIHnTUTP6oJkMjDuaIPPf7gtuq7Sq94MfsQZSs4xU2E-Z0ub8H05uElluPfX5VSgvGubyDQe88memco6YTKOdHg5wJweOvB0omxmQPybCLkj5EzZ4cGEM6cRPvvo"/>
+<div class="absolute top-4 left-4 bg-black/50 backdrop-blur-md px-sm py-xs rounded border border-white/10">
+<span class="text-label-sm font-label-sm text-white uppercase tracking-wider">Original (EN)</span>
+</div>
+</div>
+<!-- Split Line -->
+<div class="video-split-divider">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-primary-container border-2 border-primary flex items-center justify-center cursor-ew-resize">
+<span class="material-symbols-outlined text-white text-[16px]">unfold_more</span>
+</div>
+</div>
+<!-- Right: Localized -->
+<div class="w-1/2 h-full bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover grayscale-[0.2]" data-alt="The exact same professional cinematic scene as the first image, but with a subtle visual processing overlay indicating AI lip-sync modification. The environment is the same modern office, but there is a slight, technical blue shimmer over the person's mouth area to denote high-tech AI translation processing in progress. The lighting and high-end aesthetic remain consistent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4c1d7i1iVfkJEFvAWCmKcTs2lTe4cIDBhIr5c1CuSIJaa59A_RF_4XoElm1KhvPI0OvJfECu92BQS71GiLRFQsw9RSwaYIl_ij2NA8I-ulhiqPvZKsrrUgNwngG0KLK0DhLTHQiX2o85vSeRAc9oVZjH8wm34W2nI1jiRadbKGLDG5eYkjqorX-DXlMDf2k8k2JHVRLkt_O-hwKW3UQeL_klNXFmc9LDDPYkT_e985R0VU577I-GODPPQb4pVGpABUBUiL7N1Msw"/>
+<div class="absolute top-4 right-4 bg-primary-container/80 backdrop-blur-md px-sm py-xs rounded border border-primary/20">
+<span class="text-label-sm font-label-sm text-on-primary-container uppercase tracking-wider">Localized (ES)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Playback Controls -->
+<div class="bg-surface-container-lowest p-md border-y border-outline-variant flex flex-col gap-sm">
+<div class="flex items-center gap-md">
+<span class="text-label-sm font-code text-on-surface-variant">00:14:22</span>
+<div class="flex-1 h-1 bg-surface-variant rounded-full relative group cursor-pointer">
+<div class="absolute left-0 top-0 h-full w-[45%] bg-primary rounded-full"></div>
+<div class="absolute left-[45%] top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<span class="text-label-sm font-code text-on-surface-variant">01:05:00</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-lg">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">skip_previous</span>
+</button>
+<button class="w-10 h-10 bg-on-surface text-surface rounded-full flex items-center justify-center hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined">skip_next</span>
+</button>
+<div class="flex items-center gap-sm ml-md">
+<span class="material-symbols-outlined text-on-surface-variant">volume_up</span>
+<div class="w-16 h-1 bg-outline-variant rounded-full">
+<div class="w-[70%] h-full bg-on-surface-variant rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-xs px-sm py-xs border border-outline-variant rounded hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">closed_caption</span>
+<span class="text-label-sm font-label-sm">Subtitles</span>
+</button>
+<button class="p-xs text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined">fullscreen</span>
+</button>
+<button class="p-xs text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Subtitle Table Section -->
+<div class="h-64 overflow-auto bg-surface-container-low">
+<table class="w-full text-left border-collapse">
+<thead class="sticky top-0 bg-surface-container-high z-10">
+<tr class="border-b border-outline-variant">
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider w-24">Start</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider w-24">End</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Original Text (EN)</th>
+<th class="p-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Translated Text (ES)</th>
+<th class="p-md w-10"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<tr class="hover:bg-surface-variant/50 transition-colors group">
+<td class="p-md font-code text-label-sm text-on-surface-variant">00:00:04</td>
+<td class="p-md font-code text-label-sm text-on-surface-variant">00:00:08</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">Welcome to the future of media production with Aether.</td>
+<td class="p-md font-body-sm text-body-sm text-primary">Bienvenidos al futuro de la producción de medios con Aether.</td>
+<td class="p-md text-right"><span class="material-symbols-outlined text-outline text-[18px] opacity-0 group-hover:opacity-100 cursor-pointer">edit</span></td>
+</tr>
+<tr class="bg-primary-container/5 border-l-2 border-primary">
+<td class="p-md font-code text-label-sm text-primary">00:00:08</td>
+<td class="p-md font-code text-label-sm text-primary">00:00:12</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">Today we're looking at automated lip-syncing technologies.</td>
+<td class="p-md font-body-sm text-body-sm text-primary">Hoy estamos viendo tecnologías de sincronización de labios automatizadas.</td>
+<td class="p-md text-right"><span class="material-symbols-outlined text-primary text-[18px]">play_circle</span></td>
+</tr>
+<tr class="hover:bg-surface-variant/50 transition-colors group">
+<td class="p-md font-code text-label-sm text-on-surface-variant">00:00:12</td>
+<td class="p-md font-code text-label-sm text-on-surface-variant">00:00:16</td>
+<td class="p-md font-body-sm text-body-sm text-on-surface">This allows creators to reach global audiences instantly.</td>
+<td class="p-md font-body-sm text-body-sm text-primary">Esto permite a los creadores llegar a audiencias globales al instante.</td>
+<td class="p-md text-right"><span class="material-symbols-outlined text-outline text-[18px] opacity-0 group-hover:opacity-100 cursor-pointer">edit</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Waveform View -->
+<div class="h-20 bg-surface border-t border-outline-variant flex items-center px-lg overflow-hidden relative">
+<div class="absolute inset-y-0 left-[280px] w-0.5 bg-primary z-10 shadow-[0_0_8px_rgba(195,192,255,0.5)]"></div>
+<div class="flex items-end gap-[1px] h-12 w-full opacity-40">
+<!-- Simulated Waveform -->
+<div class="flex-1 bg-outline-variant" style="height: 20%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 45%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 80%"></div>
+<div class="flex-1 bg-primary" style="height: 60%"></div>
+<div class="flex-1 bg-primary" style="height: 95%"></div>
+<div class="flex-1 bg-primary" style="height: 40%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 30%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 75%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 50%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 20%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 45%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 80%"></div>
+<div class="flex-1 bg-primary" style="height: 60%"></div>
+<div class="flex-1 bg-primary" style="height: 95%"></div>
+<div class="flex-1 bg-primary" style="height: 40%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 30%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 75%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 50%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 20%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 45%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 80%"></div>
+<div class="flex-1 bg-primary" style="height: 60%"></div>
+<div class="flex-1 bg-primary" style="height: 95%"></div>
+<div class="flex-1 bg-primary" style="height: 40%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 30%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 75%"></div>
+<div class="flex-1 bg-outline-variant" style="height: 50%"></div>
+</div>
+</div>
+</section>
+<!-- Right Inspector Panel -->
+<aside class="w-[320px] bg-surface flex flex-col p-lg gap-xl overflow-y-auto">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-md">Inspector</h3>
+<!-- Language Selector -->
+<div class="space-y-sm">
+<label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest">Target Language</label>
+<div class="relative group">
+<button class="w-full flex items-center justify-between p-md bg-surface-container-high border border-outline-variant rounded-lg text-on-surface font-label-md text-label-md">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary">language</span>
+                                    Spanish (Castilian)
+                                </div>
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+</div>
+<div class="h-px bg-outline-variant"></div>
+<!-- Voice Settings -->
+<div class="space-y-xl">
+<div class="flex items-center justify-between">
+<h4 class="text-label-md font-label-md text-on-surface">Voice Settings</h4>
+<span class="text-label-sm font-label-sm px-xs py-[2px] bg-primary/10 text-primary border border-primary/20 rounded">AI Dubbing V2</span>
+</div>
+<div class="space-y-md">
+<div class="space-y-xs">
+<div class="flex justify-between text-label-sm font-label-sm mb-xs">
+<span class="text-on-surface-variant">Pitch</span>
+<span class="text-on-surface">0.95x</span>
+</div>
+<input class="w-full h-1 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+<div class="space-y-xs">
+<div class="flex justify-between text-label-sm font-label-sm mb-xs">
+<span class="text-on-surface-variant">Emotion Intensity</span>
+<span class="text-on-surface">High</span>
+</div>
+<div class="flex gap-xs">
+<button class="flex-1 py-xs text-label-sm font-label-sm border border-outline-variant rounded hover:bg-surface-variant transition-colors">Low</button>
+<button class="flex-1 py-xs text-label-sm font-label-sm border border-outline-variant rounded hover:bg-surface-variant transition-colors">Med</button>
+<button class="flex-1 py-xs text-label-sm font-label-sm bg-primary text-on-primary rounded">High</button>
+</div>
+</div>
+<div class="space-y-xs">
+<div class="flex justify-between text-label-sm font-label-sm mb-xs">
+<span class="text-on-surface-variant">Speech Rate</span>
+<span class="text-on-surface">1.05x</span>
+</div>
+<input class="w-full h-1 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+</div>
+</div>
+</div>
+<div class="h-px bg-outline-variant"></div>
+<!-- Lip Sync Precision -->
+<div class="space-y-md">
+<label class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-widest">Processing Mode</label>
+<div class="p-md bg-surface-container border border-primary/30 rounded-lg">
+<div class="flex items-center gap-md mb-xs">
+<span class="material-symbols-outlined text-primary">auto_fix_high</span>
+<span class="text-label-md font-label-md text-on-surface">Neural Lip-Sync</span>
+</div>
+<p class="text-label-sm font-body-sm text-on-surface-variant">High precision facial re-mapping for natural mouth movements in the target language.</p>
+</div>
+</div>
+<div class="mt-auto space-y-md">
+<button class="w-full py-md bg-surface-container-high border border-outline-variant rounded-lg text-on-surface font-label-md text-label-md flex items-center justify-center gap-md hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined">refresh</span>
+                        Regenerate Preview
+                    </button>
+<button class="w-full py-md bg-primary text-on-primary rounded-lg font-label-md text-label-md flex items-center justify-center gap-md hover:opacity-90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">done_all</span>
+                        Approve &amp; Bake
+                    </button>
+</div>
+</aside>
+</div>
+</main>
+<script>
+        // Simple micro-interaction for the split screen divider
+        const divider = document.querySelector('.video-split-divider');
+        const leftSide = divider.previousElementSibling;
+        const rightSide = divider.nextElementSibling;
+        let isDragging = false;
+
+        divider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            document.body.style.cursor = 'col-resize';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const rect = divider.parentElement.getBoundingClientRect();
+            let offset = ((e.clientX - rect.left) / rect.width) * 100;
+            offset = Math.max(10, Math.min(90, offset));
+            divider.style.left = `${offset}%`;
+            leftSide.style.width = `${offset}%`;
+            rightSide.style.width = `${100 - offset}%`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+        });
+
+        // Toggle subtitle row active state
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            row.addEventListener('click', () => {
+                rows.forEach(r => {
+                    r.classList.remove('bg-primary-container/5', 'border-l-2', 'border-primary');
+                    r.classList.add('hover:bg-surface-variant/50');
+                    const icon = r.querySelector('.material-symbols-outlined[style*="FILL"]');
+                    if(icon) {
+                        icon.textContent = 'edit';
+                        icon.removeAttribute('style');
+                        icon.classList.add('opacity-0');
+                    }
+                });
+                row.classList.add('bg-primary-container/5', 'border-l-2', 'border-primary');
+                row.classList.remove('hover:bg-surface-variant/50');
+                const icon = row.querySelector('.material-symbols-outlined:last-child');
+                if(icon) {
+                    icon.textContent = 'play_circle';
+                    icon.classList.remove('opacity-0');
+                    icon.style.color = 'var(--tw-color-primary)';
+                }
+            });
+        });
+    </script>
+</body></html>

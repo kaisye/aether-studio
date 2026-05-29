@@ -1,0 +1,9 @@
+fastapi==0.124.2
+uvicorn[standard]==0.38.0
+sqlalchemy==2.0.45
+pydantic==2.12.5
+pytest==9.0.2
+httpx==0.28.1
+python-dotenv>=1.1.0
+yt-dlp>=2025.12.8
+edge-tts>=7.2.3

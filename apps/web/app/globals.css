@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0c0f10;
+  --surface: #111415;
+  --surface-low: #191c1d;
+  --surface-container: #1d2021;
+  --surface-high: #282a2b;
+  --surface-highest: #323536;
+  --outline: #464555;
+  --outline-strong: #5c5b6b;
+  --text: #e1e3e4;
+  --muted: #c7c4d8;
+  --muted-2: #918fa1;
+  --primary: #c3c0ff;
+  --primary-strong: #4f46e5;
+  --primary-ink: #1d00a5;
+  --success: #67e8a5;
+  --warning: #ffb695;
+  --danger: #ffb4ab;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-inter), Inter, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--surface-highest);
+  border-radius: 999px;
+}
+
+.font-display {
+  font-family: var(--font-geist), Inter, system-ui, sans-serif;
+}
+
+.aether-focus {
+  outline: 1px solid var(--primary-strong);
+  outline-offset: 2px;
+}
