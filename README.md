@@ -2,6 +2,8 @@
 
 MVP full-stack implementation for the Aether Studio Content Queue and Project Workspace.
 
+<img width="2555" height="1297" alt="image" src="https://github.com/user-attachments/assets/837bfc01-a7b9-4c58-97f1-1a1eb22e5a00" />
+
 ## Apps
 
 - `apps/web`: Next.js, TypeScript, Tailwind, TanStack Table.
