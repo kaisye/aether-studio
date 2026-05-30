@@ -225,11 +225,18 @@ def _sanitize_tts_text(text: str) -> str:
 
 
 def _split_tts_text(text: str, max_chars: int = 90) -> list[str]:
+    provider = _tts_provider()
     max_chars = _env_int(
         "AETHER_TTS_SPLIT_MAX_CHARS",
-        900 if _tts_provider() == "omnivoice" else max_chars,
+        14000 if provider == "omnivoice" else max_chars,
         minimum=60,
-        maximum=3500,
+        maximum=30000,
+    )
+    max_words = _env_int(
+        "AETHER_TTS_SPLIT_MAX_WORDS",
+        1800 if provider == "omnivoice" else 60,
+        minimum=20,
+        maximum=2500,
     )
     sentences = re.split(r"(?<=[.!?…])\s+", text)
     fragments: list[str] = []
@@ -238,7 +245,8 @@ def _split_tts_text(text: str, max_chars: int = 90) -> list[str]:
         sentence = sentence.strip()
         if not sentence:
             continue
-        if len(current) + len(sentence) + 1 <= max_chars:
+        candidate = f"{current} {sentence}".strip()
+        if len(candidate) <= max_chars and _word_count(candidate) <= max_words:
             current = f"{current} {sentence}".strip()
             continue
         if current:
@@ -249,13 +257,14 @@ def _split_tts_text(text: str, max_chars: int = 90) -> list[str]:
 
     expanded: list[str] = []
     for fragment in fragments or [text]:
-        if len(fragment) <= max_chars:
+        if len(fragment) <= max_chars and _word_count(fragment) <= max_words:
             expanded.append(fragment)
             continue
         words = fragment.split()
         chunk: list[str] = []
         for word in words:
-            if len(" ".join([*chunk, word])) > max_chars and chunk:
+            candidate = " ".join([*chunk, word])
+            if (len(candidate) > max_chars or len(candidate.split()) > max_words) and chunk:
                 expanded.append(" ".join(chunk))
                 chunk = [word]
             else:
@@ -327,9 +336,10 @@ def _group_cues_for_tts(cues: list[SubtitleCue]) -> list[SubtitleCue]:
         return []
 
     provider = _tts_provider()
-    max_gap = _env_float("AETHER_TTS_GROUP_MAX_GAP", 2.5 if provider == "omnivoice" else 0.9, minimum=0.0, maximum=10.0)
-    max_duration = _env_float("AETHER_TTS_GROUP_MAX_DURATION", 35.0 if provider == "omnivoice" else 11.0, minimum=1.0, maximum=120.0)
-    max_chars = _env_int("AETHER_TTS_GROUP_MAX_CHARS", 900 if provider == "omnivoice" else 240, minimum=80, maximum=3500)
+    max_gap = _env_float("AETHER_TTS_GROUP_MAX_GAP", 8.0 if provider == "omnivoice" else 0.9, minimum=0.0, maximum=30.0)
+    max_duration = _env_float("AETHER_TTS_GROUP_MAX_DURATION", 300.0 if provider == "omnivoice" else 11.0, minimum=1.0, maximum=900.0)
+    max_chars = _env_int("AETHER_TTS_GROUP_MAX_CHARS", 14000 if provider == "omnivoice" else 240, minimum=80, maximum=30000)
+    max_words = _env_int("AETHER_TTS_GROUP_MAX_WORDS", 1800 if provider == "omnivoice" else 60, minimum=20, maximum=2500)
 
     groups: list[SubtitleCue] = []
     start = cues[0].start
@@ -340,8 +350,15 @@ def _group_cues_for_tts(cues: list[SubtitleCue]) -> list[SubtitleCue]:
         text = _clean_cue_text(cue.text)
         gap = cue.start - end
         projected_duration = cue.end - start
-        projected_chars = len(" ".join([*texts, text]))
-        should_merge = gap <= max_gap and projected_duration <= max_duration and projected_chars <= max_chars
+        projected_text = " ".join([*texts, text])
+        projected_chars = len(projected_text)
+        projected_words = _word_count(projected_text)
+        should_merge = (
+            gap <= max_gap
+            and projected_duration <= max_duration
+            and projected_chars <= max_chars
+            and projected_words <= max_words
+        )
 
         if should_merge:
             end = max(end, cue.end)
@@ -375,6 +392,10 @@ def _env_float(name: str, default: float, minimum: float, maximum: float) -> flo
     except ValueError:
         value = default
     return max(minimum, min(maximum, value))
+
+
+def _word_count(text: str) -> int:
+    return len(re.findall(r"\S+", text))
 
 
 def _clean_cue_text(text: str) -> str:

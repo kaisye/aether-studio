@@ -98,6 +98,16 @@ OMNIVOICE_REF_AUDIO_URL=https://example.com/reference.wav
 OMNIVOICE_REF_TEXT=Reference transcript if available
 ```
 
+For long-form dubbing, the service accepts larger text chunks by default:
+
+```env
+OMNIVOICE_MAX_TEXT_CHARS=20000
+OMNIVOICE_MAX_REF_TEXT_CHARS=12000
+OMNIVOICE_MAX_INSTRUCTION_CHARS=1000
+```
+
+If Aether sends large OmniVoice chunks, make sure the Colab service has this updated version and has been restarted.
+
 ## Default Voice Profile Files
 
 The service automatically looks for these files next to `omnivoice_service.py`:

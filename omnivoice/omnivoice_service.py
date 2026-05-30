@@ -32,6 +32,9 @@ API_KEY = os.getenv("OMNIVOICE_API_KEY", "").strip()
 SAMPLE_RATE = 24000
 DEFAULT_HOST = os.getenv("OMNIVOICE_HOST", "0.0.0.0")
 DEFAULT_PORT = int(os.getenv("OMNIVOICE_PORT", "8008"))
+MAX_TEXT_CHARS = int(os.getenv("OMNIVOICE_MAX_TEXT_CHARS", "20000"))
+MAX_REF_TEXT_CHARS = int(os.getenv("OMNIVOICE_MAX_REF_TEXT_CHARS", "12000"))
+MAX_INSTRUCTION_CHARS = int(os.getenv("OMNIVOICE_MAX_INSTRUCTION_CHARS", "1000"))
 
 
 logging.basicConfig(level=os.getenv("OMNIVOICE_LOG_LEVEL", "INFO"))
@@ -46,10 +49,10 @@ DEFAULT_INSTRUCTION_PATH = Path(os.getenv("OMNIVOICE_DEFAULT_INSTRUCTION_PATH", 
 
 
 class SynthesizeRequest(BaseModel):
-    text: str = Field(min_length=1, max_length=4000)
+    text: str = Field(min_length=1, max_length=MAX_TEXT_CHARS)
     mode: Literal["auto", "design", "clone"] = "auto"
-    instruct: str | None = Field(default=None, max_length=500)
-    ref_text: str | None = Field(default=None, max_length=1000)
+    instruct: str | None = Field(default=None, max_length=MAX_INSTRUCTION_CHARS)
+    ref_text: str | None = Field(default=None, max_length=MAX_REF_TEXT_CHARS)
     ref_audio_url: str | None = None
     ref_audio_base64: str | None = None
     output_format: Literal["wav"] = "wav"

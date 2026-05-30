@@ -49,8 +49,9 @@ def _translate_srt_with_nvidia(srt_text: str, source_language: str, target_langu
         blocks = blocks[:max_blocks]
 
     translated_batches: list[str] = []
-    batch_size = _optional_positive_int("AETHER_TRANSLATION_BATCH_SIZE") or 20
-    for batch in _batch_blocks(blocks, size=batch_size):
+    batch_size = _optional_positive_int("AETHER_TRANSLATION_BATCH_SIZE") or 80
+    batch_max_chars = _optional_positive_int("AETHER_TRANSLATION_BATCH_MAX_CHARS") or 30000
+    for batch in _batch_blocks(blocks, size=batch_size, max_chars=batch_max_chars):
         translated_batches.append(_translate_srt_batch("\n\n".join(batch), source_language, target_language))
     return "\n\n".join(translated_batches).strip() + "\n"
 
@@ -85,7 +86,7 @@ def _translate_srt_batch(srt_text: str, source_language: str, target_language: s
                 {"role": "system", "content": "You are a professional subtitle localization engine."},
                 {"role": "user", "content": prompt},
             ],
-            "max_tokens": 16384,
+            "max_tokens": _optional_positive_int("AETHER_TRANSLATION_MAX_TOKENS") or 32768,
             "temperature": 0.2,
             "top_p": 0.95,
             "top_k": 20,
@@ -94,7 +95,7 @@ def _translate_srt_batch(srt_text: str, source_language: str, target_language: s
             "stream": False,
             "chat_template_kwargs": {"enable_thinking": False},
         },
-        timeout=180,
+        timeout=_optional_positive_int("AETHER_TRANSLATION_TIMEOUT_SECONDS") or 300,
     )
     response.raise_for_status()
     content = response.json()["choices"][0]["message"]["content"]
@@ -108,8 +109,23 @@ def _split_srt_blocks(srt_text: str) -> list[str]:
     return [block.strip() for block in re.split(r"\n\s*\n", srt_text.strip()) if "-->" in block]
 
 
-def _batch_blocks(blocks: list[str], size: int) -> list[list[str]]:
-    return [blocks[index : index + size] for index in range(0, len(blocks), size)]
+def _batch_blocks(blocks: list[str], size: int, max_chars: int) -> list[list[str]]:
+    batches: list[list[str]] = []
+    current: list[str] = []
+    current_chars = 0
+    for block in blocks:
+        block_chars = len(block)
+        would_exceed_size = len(current) >= size
+        would_exceed_chars = bool(current and current_chars + block_chars + 2 > max_chars)
+        if would_exceed_size or would_exceed_chars:
+            batches.append(current)
+            current = []
+            current_chars = 0
+        current.append(block)
+        current_chars += block_chars + 2
+    if current:
+        batches.append(current)
+    return batches
 
 
 def _same_language(source_language: str | None, target_language: str | None) -> bool:
