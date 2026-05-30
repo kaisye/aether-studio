@@ -159,7 +159,7 @@ def _save_tts_with_retries(text: str, voice: str, output: Path, rate: str) -> No
 
 
 def _save_provider_tts(text: str, voice: str, output: Path, rate: str) -> None:
-    provider = os.getenv("AETHER_TTS_PROVIDER", "edge").strip().lower()
+    provider = _tts_provider()
     if provider == "omnivoice":
         _save_omnivoice_tts(text, voice, output)
         return
@@ -225,6 +225,12 @@ def _sanitize_tts_text(text: str) -> str:
 
 
 def _split_tts_text(text: str, max_chars: int = 90) -> list[str]:
+    max_chars = _env_int(
+        "AETHER_TTS_SPLIT_MAX_CHARS",
+        900 if _tts_provider() == "omnivoice" else max_chars,
+        minimum=60,
+        maximum=3500,
+    )
     sentences = re.split(r"(?<=[.!?…])\s+", text)
     fragments: list[str] = []
     current = ""
@@ -320,6 +326,11 @@ def _group_cues_for_tts(cues: list[SubtitleCue]) -> list[SubtitleCue]:
     if not cues:
         return []
 
+    provider = _tts_provider()
+    max_gap = _env_float("AETHER_TTS_GROUP_MAX_GAP", 2.5 if provider == "omnivoice" else 0.9, minimum=0.0, maximum=10.0)
+    max_duration = _env_float("AETHER_TTS_GROUP_MAX_DURATION", 35.0 if provider == "omnivoice" else 11.0, minimum=1.0, maximum=120.0)
+    max_chars = _env_int("AETHER_TTS_GROUP_MAX_CHARS", 900 if provider == "omnivoice" else 240, minimum=80, maximum=3500)
+
     groups: list[SubtitleCue] = []
     start = cues[0].start
     end = cues[0].end
@@ -330,7 +341,7 @@ def _group_cues_for_tts(cues: list[SubtitleCue]) -> list[SubtitleCue]:
         gap = cue.start - end
         projected_duration = cue.end - start
         projected_chars = len(" ".join([*texts, text]))
-        should_merge = gap <= 0.9 and projected_duration <= 11.0 and projected_chars <= 240
+        should_merge = gap <= max_gap and projected_duration <= max_duration and projected_chars <= max_chars
 
         if should_merge:
             end = max(end, cue.end)
@@ -344,6 +355,26 @@ def _group_cues_for_tts(cues: list[SubtitleCue]) -> list[SubtitleCue]:
 
     groups.append(SubtitleCue(start=start, end=end, text=_dedupe_joined_text(texts)))
     return [group for group in groups if group.text]
+
+
+def _tts_provider() -> str:
+    return os.getenv("AETHER_TTS_PROVIDER", "edge").strip().lower()
+
+
+def _env_int(name: str, default: int, minimum: int, maximum: int) -> int:
+    try:
+        value = int(os.getenv(name, str(default)))
+    except ValueError:
+        value = default
+    return max(minimum, min(maximum, value))
+
+
+def _env_float(name: str, default: float, minimum: float, maximum: float) -> float:
+    try:
+        value = float(os.getenv(name, str(default)))
+    except ValueError:
+        value = default
+    return max(minimum, min(maximum, value))
 
 
 def _clean_cue_text(text: str) -> str:
