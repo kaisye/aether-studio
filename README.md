@@ -17,6 +17,8 @@ Video URL
 
 It is intentionally not a workflow editor and does not expose internal tools such as workers, FFmpeg, LLM calls, or TTS providers in the product UI.
 
+<img width="2556" height="1302" alt="image" src="https://github.com/user-attachments/assets/9b6ff241-610f-49f8-8aa7-bd27ef672626" />
+
 ## Repository Structure
 
 ```text
